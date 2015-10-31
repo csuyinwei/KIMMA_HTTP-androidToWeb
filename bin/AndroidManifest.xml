@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name = "com.example.fragment.WorkActivity"
+            android:label="@string/title_activity_work">
+        </activity>
+        <activity
             android:name=".ShowDataActivity"
             android:label="@string/title_activity_show_data" >
         </activity>

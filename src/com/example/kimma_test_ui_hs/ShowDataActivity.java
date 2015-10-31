@@ -41,15 +41,15 @@ import android.widget.Toast;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ShowDataActivity extends ActionBarActivity {
 	
-	private Button date;
+
 	private Button T_now;
 	private Button T_All;
 	private TextView title;
 	private TextView IdLab;
 	private TextView showId;
-	private TextView showDate;
+
 	private TextView show_T_now;
-	private Tools tools;
+	private ChartTool tools;
 	private String Test_str;
 	private BluetoothGattService bluetoothGattService;
 	private BluetoothGatt bluetoothGatt;
@@ -68,8 +68,7 @@ public class ShowDataActivity extends ActionBarActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_show_data);
 		//初始化控件
-		date = (Button)findViewById(R.id.date);
-		date.setEnabled(false);
+
 		T_now = (Button)findViewById(R.id.T_now);
 		T_now.setEnabled(false);
 		T_All = (Button)findViewById(R.id.T_All);
@@ -79,7 +78,6 @@ public class ShowDataActivity extends ActionBarActivity {
 		IdLab = (TextView)findViewById(R.id.IdLab);
 		IdLab.setText("批次序列号");
 		showId = (TextView)findViewById(R.id.showId);
-		showDate = (TextView)findViewById(R.id.showDate);
 		show_T_now = (TextView)findViewById(R.id.show_T_now);
 		//初始化蓝牙设备
 		bluetoothManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
@@ -94,19 +92,9 @@ public class ShowDataActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View arg0) {
 				//填充数据
-				LinearLayout layout_1 = (LinearLayout)findViewById(R.id.linechart_1);
-				LinearLayout layout_2 = (LinearLayout)findViewById(R.id.linechart_2);
-				tools = new Tools(ShowDataActivity.this,layout_1,layout_2);
-				tools.TemperautreForOneDay();
-				tools.TemperautreForAll();
-			}
-		});
-		
-		date.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
+				
+				byte[] data = {(byte) 0xA1,0x30,0x00,0x00,0x00};
+				writeCharacteristic(characteristic, data);
 				readCharacteristic(characteristic);
 			}
 		});
@@ -116,8 +104,9 @@ public class ShowDataActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				byte[] data = {0x0A};
+				byte[] data = {(byte) 0xA2,0x30,0x00,0x00,0x00};
 				writeCharacteristic(characteristic, data);
+				readCharacteristic(characteristic);
 			}
 		});
 	}
@@ -170,8 +159,7 @@ public class ShowDataActivity extends ActionBarActivity {
 	            switch (which)  
 	            {  
 	            case AlertDialog.BUTTON_POSITIVE:// "确认"按钮退出程序  
-	            	close();
-	            	
+	            	close();	
 	                finish();  
 	                break;  
 	            case AlertDialog.BUTTON_NEGATIVE:// "取消"第二个按钮取消对话框  
@@ -195,7 +183,18 @@ public class ShowDataActivity extends ActionBarActivity {
             	StratUI(); 	 
             } 
             if(msg.what == 1){
-            	showDate.setText(Test_str);
+            	show_T_now.setText(Test_str);
+            }
+            if(msg.what == 2){
+				LinearLayout layout_1 = (LinearLayout)findViewById(R.id.linechart_1);
+				LinearLayout layout_2 = (LinearLayout)findViewById(R.id.linechart_2);
+				tools = new ChartTool(ShowDataActivity.this,layout_1,layout_2);
+				tools.TemperautreForOneDay();
+				tools.TemperautreForAll();
+            }
+            if(msg.what == 3){
+            	System.out.println("没有历史数据!");
+            	Toast.makeText(ShowDataActivity.this,"没有历史数据", Toast.LENGTH_SHORT).show();
             }
         }  
     };
@@ -249,12 +248,32 @@ public class ShowDataActivity extends ActionBarActivity {
 			@Override
 			public void onCharacteristicRead(BluetoothGatt gatt,BluetoothGattCharacteristic characteristic,int status){
 					byte[] data = characteristic.getValue();
+					
+					
 					Test_str = bytesToHexString(data);
-					/**********测试**********/
-					Message msg = new Message();  
-		            msg.what = 1;  
-		            handler.sendMessage(msg);
-		            System.out.println(Test_str);
+					if(Test_str.length()>2){
+						//历史数据
+						Message msg = new Message();  
+			            msg.what = 2;  
+			            handler.sendMessage(msg);
+			            System.out.println(Test_str);
+					}else{
+						/**********测试**********/
+						if(Test_str.equals("ee")){
+							Message msg = new Message();  
+				            msg.what = 3;  
+				            handler.sendMessage(msg);
+				            System.out.println(Test_str);
+						}else{
+							//当前数据
+							Message msg = new Message();  
+				            msg.what = 1;  
+				            handler.sendMessage(msg);
+				            System.out.println(Test_str);
+						}
+						
+					}
+					
 					
 			}
 			
@@ -299,9 +318,10 @@ public class ShowDataActivity extends ActionBarActivity {
 	//更新UI界面
 	public void StratUI(){
 		T_now.setEnabled(true);
-		date.setEnabled(true);
 		T_All.setEnabled(true);
 	}
+	
+
 	
 	
 	//断开连接

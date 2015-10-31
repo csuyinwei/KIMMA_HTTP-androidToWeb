@@ -8,11 +8,14 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
-public class Tools {
+public class ChartTool {
 	
 	private Context context;
 	
@@ -21,7 +24,7 @@ public class Tools {
 	private LinearLayout temperautreForAll;
 
 
-	public Tools(Context context, LinearLayout temperautreForOneDay,
+	public ChartTool(Context context, LinearLayout temperautreForOneDay,
 			LinearLayout temperautreForAll) {
 		super();
 		this.context = context;
@@ -144,4 +147,6 @@ public class Tools {
         temperautreForOneDay.addView(view, new LayoutParams(LayoutParams.FILL_PARENT, 400));
 	}
 
+	
+	
 }

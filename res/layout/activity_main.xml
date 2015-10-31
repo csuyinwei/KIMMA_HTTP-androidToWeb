@@ -2,20 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <LinearLayout 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/scan_bt"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="扫描" >
-        </Button>
-    </LinearLayout>
     <ListView 
         android:id="@id/android:list" 
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         android:drawSelectorOnTop="false" />
+    <ProgressBar
+         android:id="@+id/bar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         style="@android:style/Widget.ProgressBar.Inverse"
+         android:layout_gravity="center"
+         android:visibility="invisible">
+    </ProgressBar>
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="15dip"></TextView>
+    <Button
+        android:id="@+id/scan_bt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan" >
+    </Button>
 </LinearLayout>

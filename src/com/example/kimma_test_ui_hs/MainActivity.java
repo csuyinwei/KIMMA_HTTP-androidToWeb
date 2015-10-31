@@ -3,6 +3,9 @@ package com.example.kimma_test_ui_hs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.example.fragment.WorkActivity;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ListActivity;
@@ -19,12 +22,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends ListActivity {
 
 	private Button scan_bt;
+	private TextView count;
     private ArrayList<HashMap<String, Object>> listItems;    //存放文字、图片信息
     private SimpleAdapter listItemAdapter;           //适配器   
 	//与蓝牙有关的
@@ -33,6 +39,7 @@ public class MainActivity extends ListActivity {
 	private Handler mHandler;
 	//存储蓝牙扫描结果,	key:name_address, value: iBeacon
 	private Map<String,iBeacon> mapScanResult;
+	private ProgressBar bar;
     @Override
     public void onCreate(Bundle icicle)   {
 	    super.onCreate(icicle);
@@ -47,7 +54,9 @@ public class MainActivity extends ListActivity {
   			Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
   			startActivityForResult(intent, 1);
   		}
-	    
+  		
+  	    bar = (ProgressBar) findViewById(R.id.bar);
+	    count = (TextView)findViewById(R.id.count);
 	    scan_bt = (Button)findViewById(R.id.scan_bt);
 		mapScanResult = new HashMap<String,iBeacon>();
 		mHandler = new Handler();
@@ -56,6 +65,7 @@ public class MainActivity extends ListActivity {
 			public void onClick(View v) {
 				//先扫描
 				initParam();
+				
 				//然后初始化ListView
 				while(mapScanResult==null){}
 	            System.out.println("initListView");
@@ -65,7 +75,8 @@ public class MainActivity extends ListActivity {
 	            }
 	    		initListView();
 	        }
-		});    
+		});  
+	    
     }
     private void initListView(){   
         listItems = new ArrayList<HashMap<String, Object>>();
@@ -85,6 +96,7 @@ public class MainActivity extends ListActivity {
                 new int[] {R.id.address,R.id.rssi, R.id.ItemImage}//list_item.xml布局文件里面的一个ImageView的ID,一个TextView 的ID  
         );
         MainActivity.this.setListAdapter(listItemAdapter);
+        count.setText(listItems.size()+" device");
     }
     
     @Override
@@ -93,7 +105,8 @@ public class MainActivity extends ListActivity {
         String []Click_key= (String[])mapScanResult.keySet().toArray(new String[mapScanResult.keySet().size()]);
         String Click_Address = (String)(mapScanResult.get(Click_key[position]).getAddress());
         System.out.println(Click_Address);
-        Intent intent = new Intent(MainActivity.this,ShowDataActivity.class);
+        /*******************************************/
+        Intent intent = new Intent(MainActivity.this,WorkActivity.class);
         intent.putExtra("Click_Address", Click_Address);
         startActivity(intent);
     }  
@@ -125,12 +138,16 @@ public class MainActivity extends ListActivity {
 	        mHandler.postDelayed(new Runnable() { 
 				@Override
 	            public void run() {
-	                mBtAdapter.stopLeScan(bltScanCallback);  
+	                mBtAdapter.stopLeScan(bltScanCallback);
+	                bar.setVisibility(-1);
+	                scan_bt.setText("Scan");
 	            }
-	        },500);
+	        },2000);
 		        System.out.println("startLeScan:");
 
-		        mBtAdapter.startLeScan(bltScanCallback); // 开始扫描	        	
+		        mBtAdapter.startLeScan(bltScanCallback); // 开始扫描	
+		        bar.setVisibility(1);
+		        scan_bt.setText("Scanning......");
 
 	    }
 	}
@@ -141,7 +158,7 @@ public class MainActivity extends ListActivity {
 	        iBeacon mBeacon = new iBeacon();
             String address = device.getAddress();   // 获取Mac地址  
             String name = device.getName();         // 获取设备名称  
-            String key = name + "_" + address;
+            String key = name + "                " + address;
             mBeacon.setAddress(address);		
             mBeacon.setRSSI(rssi);
             if (!mapScanResult.containsKey(key)){
