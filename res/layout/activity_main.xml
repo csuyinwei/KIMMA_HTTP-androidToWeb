@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent" 
         android:textSize="20dip"
-        android:textColor="#FFFF00">
+        android:textColor="#FFFF00"
+        android:padding="10dp">
     </Button>
 </LinearLayout>

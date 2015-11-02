@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -52,6 +53,7 @@ public class MainActivity extends ListActivity {
     @Override
     public void onCreate(Bundle icicle)   {
 	    super.onCreate(icicle);
+	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.activity_main);
 	    //ÉèÖÃÄ£ºý±³¾°Í¼Æ¬
 	    LinearLayout layout = (LinearLayout)findViewById(R.id.backgroundLayout);

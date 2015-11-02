@@ -6,6 +6,12 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+	<uses-feature android:name="android.hardware.camera" />
+	<uses-feature android:name="android.hardware.camera.autofocus" />
+	<uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-permission android:name="android.permission.CAMERA"></uses-permission>
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -36,6 +42,10 @@
         </activity>
         <activity
             android:name=".ChartActivity"
+            android:label="@string/title_activity_chart" >
+        </activity>
+                <activity
+            android:name="com.zijunlin.Zxing.Demo.CaptureActivity"
             android:label="@string/title_activity_chart" >
         </activity>
     </application>
