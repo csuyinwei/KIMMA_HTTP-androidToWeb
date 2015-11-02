@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" 
+    android:id="@+id/backgroundLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_3">
     <ListView 
         android:id="@id/android:list" 
         android:layout_width="fill_parent"
@@ -22,11 +26,16 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="10dp"
-        android:textSize="15dip"></TextView>
+        android:textSize="20dip"
+        android:textColor="#FFFF00">
+        
+    </TextView>
     <Button
         android:id="@+id/scan_bt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Scan" >
+        android:background="@android:color/transparent" 
+        android:textSize="20dip"
+        android:textColor="#FFFF00">
     </Button>
 </LinearLayout>

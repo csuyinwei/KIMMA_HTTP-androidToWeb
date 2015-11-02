@@ -6,5 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_show_data">ShowDataActivity</string>
     <string name="title_activity_work">workActivtiy</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_chart">ChartActivity</string>
 
 </resources>

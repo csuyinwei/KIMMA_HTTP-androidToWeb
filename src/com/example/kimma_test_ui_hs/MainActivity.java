@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.example.fragment.WorkActivity;
+import com.example.tools.BackgroundBlur;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -15,12 +16,17 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -40,11 +46,22 @@ public class MainActivity extends ListActivity {
 	//´æ´¢À¶ÑÀÉ¨Ãè½á¹û,	key:name_address, value: iBeacon
 	private Map<String,iBeacon> mapScanResult;
 	private ProgressBar bar;
+	
+	//Í¼Æ¬Ä£ºý´¦Àí
+	private BackgroundBlur backgroundBlur = new BackgroundBlur(MainActivity.this);;
     @Override
     public void onCreate(Bundle icicle)   {
 	    super.onCreate(icicle);
 	    setContentView(R.layout.activity_main);
-	 
+	    //ÉèÖÃÄ£ºý±³¾°Í¼Æ¬
+	    LinearLayout layout = (LinearLayout)findViewById(R.id.backgroundLayout);
+	    Resources res = getResources(); 
+	    Bitmap bgk = BitmapFactory.decodeResource(res, R.drawable.bg_3);
+	    backgroundBlur.blur(bgk);
+  		Bitmap bitmap = backgroundBlur.getBitmap();
+  		layout.setBackground(new BitmapDrawable(getResources(), bitmap)); 
+  		
+  		
 	  //»ñÈ¡BluetoothAdapter
 	    mBtManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
 	    mBtAdapter = mBtManager.getAdapter();
@@ -58,8 +75,10 @@ public class MainActivity extends ListActivity {
   	    bar = (ProgressBar) findViewById(R.id.bar);
 	    count = (TextView)findViewById(R.id.count);
 	    scan_bt = (Button)findViewById(R.id.scan_bt);
+	    scan_bt.setText("Scan");
 		mapScanResult = new HashMap<String,iBeacon>();
 		mHandler = new Handler();
+		
 	    scan_bt.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
