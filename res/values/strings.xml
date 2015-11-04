@@ -8,5 +8,7 @@
     <string name="title_activity_work">workActivtiy</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_chart">ChartActivity</string>
+    <string name="login">LoginActivity</string>
+    
 
 </resources>
