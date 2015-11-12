@@ -112,7 +112,7 @@ public class MainActivity extends ListActivity {
         listItemAdapter = new SimpleAdapter(
         		this,
         		listItems,   // listItems数据源    
-                R.layout.list_item,  //ListItem的XML布局实现  
+                R.layout.scan_list,  //ListItem的XML布局实现  
                 new String[] {"address","rssi","ItemImage"},     //动态数组与ImageItem对应的子项         
                 new int[] {R.id.address,R.id.rssi, R.id.ItemImage}//list_item.xml布局文件里面的一个ImageView的ID,一个TextView 的ID  
         );
