@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.fragment.WorkActivity;
+import com.example.modle.iBeacon;
 import com.example.tools.BackgroundBlur;
 
 import android.annotation.SuppressLint;

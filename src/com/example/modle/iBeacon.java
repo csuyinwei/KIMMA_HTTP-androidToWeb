@@ -1,4 +1,4 @@
-package com.example.kimma_test_ui_hs;
+package com.example.modle;
 
 public class iBeacon {
 	
