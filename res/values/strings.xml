@@ -9,6 +9,6 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_chart">ChartActivity</string>
     <string name="login">LoginActivity</string>
-    
+    <string name="title_activity_source_chart">SourceChartActivity</string>
 
 </resources>

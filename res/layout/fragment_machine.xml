@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_9">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <TextView
+	        android:id="@+id/text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="70" />
+        
+         <TextView
+	        android:id="@+id/tx_BarCode"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginTop="20dp"
+	        android:drawableTop="@drawable/code"
+	        android:paddingTop="10dp"
+	        android:layout_weight="30"/>
+    </LinearLayout>
+
+   
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+         <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView
+		        android:id="@+id/tx_lable"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:layout_weight="70"
+		        android:gravity="left"
+		        android:textSize="20sp"
+		        android:layout_marginLeft="40dp"
+		        android:text="条形码"
+		        android:textColor="#000000" />
+	        <TextView
+		        android:id="@+id/tx_showCode"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:layout_weight="30"
+		        android:hint="扫一扫商品条码"
+		        android:gravity="center"
+		        android:textSize="20sp"
+		        android:textColor="#000000" />
+        </LinearLayout>
+        <EditText 
+            android:id="@+id/et_machineID"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:paddingTop="20dp"
+            android:hint="输入售货机编号"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:background="@null">
+        </EditText>
+        <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	      
+	        <EditText 
+	            android:id="@+id/et_row"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="50"
+	            android:gravity="left"
+	            android:layout_marginRight="5dp"
+	            android:layout_marginLeft="40dp"
+	            android:paddingTop="20dp"
+	            android:hint="输入托盘号"
+	            android:textColor="#000000"
+	            android:textSize="20sp"
+	            android:background="@null">
+	         </EditText>
+	         
+	         <EditText 
+	            android:id="@+id/et_list"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="50"
+	            android:gravity="left"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="40dp"
+	            android:paddingTop="20dp"
+	            android:hint="输入货道号"
+	            android:textColor="#000000"
+	            android:textSize="20sp"
+	            android:background="@null">
+	          </EditText>
+          </LinearLayout>
+        
+        <EditText 
+            android:id="@+id/et_number"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:paddingTop="20dp"
+            android:hint="输入补货数量"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:background="@null">
+        </EditText>
+          
+        <Button 
+            android:id="@+id/bt_commit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/corners_button">
+        </Button>
+        
+        <FrameLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="75dp"
+            android:padding="10dp"
+            android:layout_gravity="bottom"
+            android:id="@+id/machine_FragmentLayout"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/corners">
+	        
+            <TextView 
+                  android:id="@+id/machine_FragmentLayout_info"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:textColor="#000000"
+                  android:textSize="15dp"
+                  />
+	         
+	     </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

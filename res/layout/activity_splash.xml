@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/start">
+    <LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
+    <TextView 
+        android:id="@+id/StartText1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="80dp"
+        android:text="KIMMA"
+        android:textSize="30dp"
+        android:textColor="#FFFFFF"/>
+    
+    <TextView 
+        android:id="@+id/StartText2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="25dp"
+        android:text="金码智能"
+        android:textSize="40dp"
+        android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/StartText3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="25dp"
+        android:gravity="center"
+        android:text="创造无限可能"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp" />
+"
+
+    
+
+</RelativeLayout>
