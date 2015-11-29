@@ -1,46 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dataFragmentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/bg_7">
-<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-   
-    <Button 
-        android:id="@+id/GetTempNow"
-        android:layout_width="fill_parent"  
-        android:layout_height="wrap_content"   
-        android:gravity="center"
-        android:textSize="20sp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/corners_button"/>
+    android:background="@drawable/bg_7"
+    android:orientation="vertical" >
+
+
+
+        <FrameLayout
+            android:id="@+id/data_FragmentLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/corners"
+            android:orientation="vertical"
+            android:padding="10dp" >
+
+            <TextView
+                android:id="@+id/data_FragmentLayout_info"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="注意: 历史数据缓存期间，不能此模块操作"
+                android:textColor="#ff0000"
+                android:gravity="center"
+                android:textSize="15sp" />
+        </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-        <SurfaceView android:id="@+id/thermograph"
-			android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="65" />
-        <TextView 
-            android:id="@+id/tx_TempNow"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="35"
-            android:hint="显示当前温度(°C)"
-            android:padding="50dp"
-            android:background="@android:color/transparent"/>"
+        android:layout_below="@+id/linearLayout1"
+        android:orientation="vertical" >
     </LinearLayout>
- </LinearLayout>
 
     <Button
         android:id="@+id/GetTempAll"
@@ -49,12 +45,49 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="32dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
         android:background="@drawable/corners_button"
         android:gravity="center"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="174dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal" >
+
+        <SurfaceView
+            android:id="@+id/thermograph"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="65" />
+
+        <TextView
+            android:id="@+id/tx_TempNow"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="35"
+            android:background="@android:color/transparent"
+            android:hint="显示当前温度(°C)"
+            android:padding="50dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/GetTempNow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignLeft="@+id/GetTempAll"
+        android:layout_alignRight="@+id/GetTempAll"
+        android:background="@drawable/corners_button"
+        android:gravity="center"
+        android:paddingBottom="2dp"
+        android:paddingTop="10dp"
         android:textSize="20sp" />
 
 </RelativeLayout>

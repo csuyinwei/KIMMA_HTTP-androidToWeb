@@ -2,7 +2,6 @@ package com.example.tools;
 
 import java.util.ArrayList;
 import java.util.Map;
-
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -10,14 +9,8 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-
 import com.example.kimma_test_ui_hs.ChartActivity;
-
-import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
@@ -41,19 +34,32 @@ public class BluetoothChart {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	public void TemperautreForOneDay(){
 		double max=-1,min=30;
 		//同样是需要数据dataset和视图渲染器renderer  
         XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();  
-        XYSeries  series = new XYSeries("温度曲线");  
-        for(int i = 0;i<144;i++){
-        	series.add(i, Double.valueOf(list.get(i).get("value")));
-        	if(min > Double.valueOf(list.get(i).get("value"))){
-        		min = Double.valueOf(list.get(i).get("value"));
-        	}else if(max < Double.valueOf(list.get(i).get("value"))){
-        		max = Double.valueOf(list.get(i).get("value"));
-        	}
+        XYSeries  series = new XYSeries("温度曲线");
+        if(list.size()>=144){
+        	for(int i = 0;i<144;i++){
+            	series.add(i, Double.valueOf(list.get(i).get("value")));
+            	if(min > Double.valueOf(list.get(i).get("value"))){
+            		min = Double.valueOf(list.get(i).get("value"));
+            	}else if(max < Double.valueOf(list.get(i).get("value"))){
+            		max = Double.valueOf(list.get(i).get("value"));
+            	}
+            }
+        }else{
+        	for(int i = 0;i<list.size();i++){
+            	series.add(i, Double.valueOf(list.get(i).get("value")));
+            	if(min > Double.valueOf(list.get(i).get("value"))){
+            		min = Double.valueOf(list.get(i).get("value"));
+            	}else if(max < Double.valueOf(list.get(i).get("value"))){
+            		max = Double.valueOf(list.get(i).get("value"));
+            	}
+            }
         }
+        
         context.info_chartOneWeek.setText("最高: "+max+"°C"+" ,最低: "+min+"°C");
         mDataset.addSeries(series);  
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();  
@@ -74,9 +80,16 @@ public class BluetoothChart {
         mRenderer.setFitLegend(true);// 调整合适的位置
         mRenderer.setShowGrid(true);//显示网格  
         //将x标签栏目显示如：1,2,3,4替换为显示1月，2月，3月，4月    
-        for(int i = 0;i<144;i++){
-        	mRenderer.addXTextLabel(i, list.get(i).get("key"));
+        if(list.size()>=144){
+        	 for(int i = 0;i<144;i++){
+             	mRenderer.addXTextLabel(i, list.get(i).get("key"));
+             }
+        }else{
+        	for(int i = 0;i<list.size();i++){
+             	mRenderer.addXTextLabel(i, list.get(i).get("key"));
+             }
         }
+       
         mRenderer.setXLabels(0);//设置只显示如1月，2月等替换后的东西，不显示1,2,3等  
         mRenderer.setBackgroundColor(Color.TRANSPARENT);
         mRenderer.setMargins(new int[] { 120, 30, 15, 20 });//设置视图位置  
@@ -94,18 +107,24 @@ public class BluetoothChart {
         temperautreForOneDay.addView(view, new LayoutParams(LayoutParams.FILL_PARENT, 550));
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void TemperautreForAll(){
+		double max=-1,min=30;
 		//同样是需要数据dataset和视图渲染器renderer  
         XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();  
         XYSeries  series = new XYSeries("温度曲线");  
-        
-        series.add(1, 6);  
-        series.add(2, 5);  
-        series.add(3, 7);  
-        series.add(4, 4); 
-        series.add(5, 5);  
-        series.add(6, 7);  
-        series.add(7, 4); 
+        if(list.size()>=144){
+        	for(int i = 0;i<list.size();i++){
+            	series.add(i, Double.valueOf(list.get(i).get("value")));
+            	if(min > Double.valueOf(list.get(i).get("value"))){
+            		min = Double.valueOf(list.get(i).get("value"));
+            	}else if(max < Double.valueOf(list.get(i).get("value"))){
+            		max = Double.valueOf(list.get(i).get("value"));
+            	}
+            }
+        }else{
+        	context.info_chartForAll.setText("表一既为所有数据");
+        }
         mDataset.addSeries(series);  
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();  
         //设置图表的X轴的当前方向  
@@ -124,13 +143,11 @@ public class BluetoothChart {
         mRenderer.setXAxisMax(5);  
         mRenderer.setFitLegend(true);// 调整合适的位置
         mRenderer.setShowGrid(true);//显示网格  
-        mRenderer.addXTextLabel(1, "第1天");  
-        mRenderer.addXTextLabel(2, "第2天");  
-        mRenderer.addXTextLabel(3, "第3天");  
-        mRenderer.addXTextLabel(4, "第4天"); 
-        mRenderer.addXTextLabel(5, "第5天"); 
-        mRenderer.addXTextLabel(6, "第6天"); 
-        mRenderer.addXTextLabel(7, "第7天"); 
+        if(list.size()>=144){
+        	for(int i = 0;i<list.size();i++){
+            	mRenderer.addXTextLabel(i, list.get(i).get("key"));
+            }
+       }
         mRenderer.setXLabels(0);//设置只显示如1月，2月等替换后的东西，不显示1,2,3等  
         mRenderer.setMargins(new int[] { 120, 30, 15, 20 });//设置视图位置  
         mRenderer.setBackgroundColor(Color.TRANSPARENT);
@@ -138,14 +155,13 @@ public class BluetoothChart {
         r.setColor(Color.YELLOW);//设置颜色  
         r.setPointStyle(PointStyle.CIRCLE);//设置点的样式  
         r.setFillPoints(true);//填充点（显示的点是空心还是实心）  
-        r.setDisplayChartValues(true);//将点的值显示出来  
         r.setChartValuesSpacing(10);//显示的点的值与图的距离  
         r.setChartValuesTextSize(25);//点的值的文字大小  
         r.setLineWidth(3);//设置线宽  
         mRenderer.addSeriesRenderer(r);  
         GraphicalView  view = ChartFactory.getLineChartView(context, mDataset, mRenderer);  
         view.setBackgroundColor(Color.TRANSPARENT); 
-        temperautreForAll.addView(view, new LayoutParams(LayoutParams.FILL_PARENT, 550));
+        temperautreForAll.addView(view, new LayoutParams(LayoutParams.FILL_PARENT, 500));
 	}
 	
 }

@@ -40,6 +40,10 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 
+/*
+ * 登录模块
+ * 功能：校验用户输入的有效性可身份的合法性
+ */
 @SuppressLint("HandlerLeak")
 public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragment {
 
@@ -48,12 +52,13 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
     private Button loginButton;
     private EditText username;
     private EditText password;
-    private OnArticleSelectedListener_HomeFregment mListener;
+    private OnArticleSelectedListener_HomeFregment mListener;//Fragment向Activity传参的监听器
     private HttpClient httpClient;
     private Tools tool = new Tools();
-    private String url = Tools.getUrl()+"login.do";
+    //private String url = Tools.getUrl()+"login.do";
+    private String url = Tools.getUrl()+"admin/doLogin";
     
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler(){//更新UI线程
     	@Override
         public void handleMessage(Message msg) {
     		try {
@@ -66,11 +71,12 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
     	    }
      }
     };
-   
+   //自定义回调接口
     public interface OnArticleSelectedListener_HomeFregment{          
 		public void onArticleSelected(String str);
 	}
 	
+    //系统回调函数
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
@@ -89,10 +95,8 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
         username = (EditText)parentView.findViewById(R.id.name);
         password = (EditText)parentView.findViewById(R.id.password);
         loginButton.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				if(!Avalidation(username.getText().toString(),password.getText().toString())){
 					Toast.makeText(getActivity(), "输入信息不能为空", Toast.LENGTH_SHORT).show();
 				}else{
@@ -139,8 +143,8 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
 			}
 			@Override
 			protected String doInBackground(Map<String, String>... arg0) {
-                String value = null;
-                Boolean Result_Login = false;
+                String value = "null";
+//                Boolean Result_Login = false;//调试用
                 HttpPost post = new HttpPost(url);
                 //解决中文乱码问题
                 post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
@@ -165,13 +169,20 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
 						System.out.println("临时响应");
 					}else if(state == 2){
 						value = EntityUtils.toString(respone.getEntity());
-						try {
-							JSONObject objectStr = new JSONObject(value.toString());
-							Result_Login = objectStr.getBoolean("Result_Login");
-							System.out.println("登录结果:"+Result_Login);
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
+						/**
+						 * 模拟调试专用
+						 */
+//						try {
+//							JSONObject objectStr = new JSONObject(value.toString());
+//							Result_Login = objectStr.getBoolean("Result_Login");
+//							System.out.println("登录结果:"+Result_Login);
+//						} catch (JSONException e) {
+//							e.printStackTrace();
+//						}
+						/*
+						 * 模拟调试专用
+						 * 
+						 */
 					}else if(state == 3){
 						System.out.println("重定向");
 					}else if(state == 4){
@@ -189,7 +200,8 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
 					msg.obj = exception;
 					handler.sendMessage(msg);					
 				}
-				return Result_Login.toString();
+				return value.toString();
+//                return Result_Login.toString();//调试用
 			}
 		}.execute(map_data);
 	}
@@ -208,12 +220,12 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
     private void setUpViews() {
         LoginActivity parentActivity = (LoginActivity) getActivity();
         resideMenu = parentActivity.getResideMenu();
-
-        // add gesture operation's ignored views
-        FrameLayout ignored_view = (FrameLayout) parentView.findViewById(R.id.ignored_view);
+        FrameLayout ignored_view = (FrameLayout) parentView.findViewById(R.id.ignored_view);//设置不可滑动区域
         resideMenu.addIgnoredView(ignored_view);
     }
-    
+    /*
+     * 对用户名和密码进行非空校验
+     */
     private boolean Avalidation(String name,String password){
     	if(name.equals("") || password.equals("")){
     		return false;

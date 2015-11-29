@@ -24,6 +24,7 @@ public class SourceChart {
 		this.linearloyout = linearloyout;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void DispatchDetaile(String name,Date time,int[] data){
 		//同样是需要数据dataset和视图渲染器renderer  
 		 XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();  
@@ -58,9 +59,11 @@ public class SourceChart {
 	        mRenderer.setMarginsColor(Color.WHITE);//设置外部背景色
 	        Calendar calendar = Calendar.getInstance();
 			calendar.setTime(time);
-			
-			for(int i = 0,n = i+1;i<data.length;i++){
-				calendar.add(Calendar.MINUTE,n*(Tools.getK()));
+			System.out.println("填充时 获得得时间:"+Tools.getSdf().format(calendar.getTime()));
+			calendar.add(Calendar.MINUTE,(data.length)*Tools.getK());
+			for(int i = 0;i<data.length;i++){
+				calendar.add(Calendar.MINUTE,-Tools.getK());
+				System.out.println("填充的时间:"+Tools.getSdf().format(calendar.getTime()));
 				mRenderer.addXTextLabel(i,Tools.getSdf().format(calendar.getTime()));
 			}
 	        mRenderer.setXLabels(0);//设置只显示如1月，2月等替换后的东西，不显示1,2,3等  

@@ -1,10 +1,8 @@
 package com.example.tools;
 
 import java.util.UUID;
-
 import com.example.kimma_test_ui_hs.WorkActivity;
-
-
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,32 +18,24 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
+import org.apache.commons.lang.ArrayUtils;
 
+@SuppressLint("HandlerLeak")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Bluetooth {
 	private WorkActivity context;
 	private String address;
 	private static final String MyAction_bluetooth_one = "com.example.bluetooth_one";
 	private static final String MyAction_bluetooth_all = "com.example.bluetooth_all";
-
+    private int sum = 0;
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	private byte[] data_now;
-	private byte[] data_all;
-	
-	
-	public byte[] getData_now() {
-		return data_now;
-	}
-
-
-	public byte[] getData_all() {
-		return data_all;
-	}
-
+	private byte[] data_now = {};
+	private byte[] data_all = {};
 
 	public Bluetooth(WorkActivity context) {
 		super();
@@ -68,13 +58,14 @@ public class Bluetooth {
         @Override  
         public void handleMessage(Message msg) {  
         	if(msg.what == 0x01){
-        		//Toast.makeText(context,"蓝牙设备连接成功",Toast.LENGTH_SHORT).show();
+        		//UI界面通知
         		context.tx_bluetooth_connect_state.setText("蓝牙设备连接成功");
-        	}
-        	if(msg.what == 0x02){
+        		context.bt_flash.setEnabled(true);
+        	}else if(msg.what == 0x02){
             	//连接失败的操作
             	Toast.makeText(context,"蓝牙设备连接失败，请退出重新连接！",Toast.LENGTH_SHORT).show();
             	context.tx_bluetooth_connect_state.setText("蓝牙设备连接失败");
+            	context.bt_flash.setEnabled(true);
             }
         }  
     };
@@ -119,6 +110,7 @@ public class Bluetooth {
 					bluetoothGattService =bluetoothGatt.getService(myUUID[0]);
 					characteristic = bluetoothGattService.getCharacteristic(myUUID[1]); 
 					handler.sendEmptyMessage(0x01);
+					handler.sendEmptyMessage(0x03);
 	    		}else{
 	    			System.out.println("onServicesDiscovered received");  
 	    		}
@@ -126,18 +118,43 @@ public class Bluetooth {
 			
 			@Override
 			public void onCharacteristicRead(BluetoothGatt gatt,BluetoothGattCharacteristic characteristic,int status){
+				if (status == BluetoothGatt.GATT_SUCCESS){
+					if(characteristic.getValue() != null){
+						
 					byte[] data = characteristic.getValue();
-						String data_str =bytesToHexString(data); 
-						if(data_str.length() == 2){
-							data_now = data;
-							System.out.println("BluetoothTool 当前温度"+data_str);
-							Intent intent  = new Intent();
-             				intent.setAction(MyAction_bluetooth_one);
-             				intent.putExtra("BluetoothData_one", data_now);
-             				context.sendBroadcast(intent);
+					if(data.length == 0){
+						System.out.println("空数据");
+					}
+						if(data.length == 1){
+							String data_str =bytesToHexString(data); 
+							Log.i("读到的数据:",data_str);
+							if(data_str.contains("ff")){
+								Log.i("广播并发送历史数据", data_str.contains("ff")+"");
+								Intent intent  = new Intent();
+	             				intent.setAction(MyAction_bluetooth_all);
+	             				intent.putExtra("BluetoothData_all", data_all);
+	             				context.sendBroadcast(intent);
+								
+							}else{
+								Log.i("读到数据不为ff,当前温度为:",data_str);
+								data_now = data;
+								Intent intent  = new Intent();
+	             				intent.setAction(MyAction_bluetooth_one);
+	             				intent.putExtra("BluetoothData_one", data_now);
+	             				context.sendBroadcast(intent);
+							}
 						}else{
-							//data_all = data;
-                         //模拟2k数据  
+					    sum+=data.length;
+					    System.out.println("size:"+sum);
+					    for(int i = 0;i<16;i++){
+					    	System.out.println("收到的数据:"+data[i]);
+					    }
+					    
+					    data_all = ArrayUtils.addAll(data_all, data);
+					    
+					    Log.i("data_all 数组的大小",data_all.length+"");
+					  
+					    /*
                         data_all= new byte[]{0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0f,
                                              0x00,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x0f,
                                              0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0f,
@@ -266,12 +283,15 @@ public class Bluetooth {
                                              0x00,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x0f,
                                              0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0f,
                                              0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0f};
-							Intent intent  = new Intent();
-             				intent.setAction(MyAction_bluetooth_all);
-             				intent.putExtra("BluetoothData_all", data_all);
-             				context.sendBroadcast(intent);
+                                             */
+
 						}
 					}
+					else {
+						System.out.println("读不到数据了");
+					}
+				}
+		}
 					
 					
 			
@@ -287,6 +307,7 @@ public class Bluetooth {
 		public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
 	        if (bluetoothAdapter == null || bluetoothGatt == null) {
 	            System.out.println( "BluetoothAdapter not initialized");
+	            System.out.println("读函数中的数据长度:"+characteristic.getValue().length);
 	            return;
 	        }
 	        bluetoothGatt.readCharacteristic(characteristic);

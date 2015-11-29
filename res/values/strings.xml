@@ -10,5 +10,6 @@
     <string name="title_activity_chart">ChartActivity</string>
     <string name="login">LoginActivity</string>
     <string name="title_activity_source_chart">SourceChartActivity</string>
+    <string name="title_activity_calendar">CalendarActivity</string>
 
 </resources>

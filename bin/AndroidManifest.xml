@@ -62,6 +62,10 @@
             android:name=".SourceChartActivity"
             android:label="@string/title_activity_source_chart" >
         </activity>
+        <activity
+            android:name=".CalendarActivity"
+            android:label="@string/title_activity_calendar" >
+        </activity>
     </application>
 
 </manifest>

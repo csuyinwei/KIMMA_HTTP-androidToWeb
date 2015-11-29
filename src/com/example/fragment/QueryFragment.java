@@ -10,80 +10,67 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.example.kimma_test_ui_hs.LoginActivity;
-import com.example.kimma_test_ui_hs.MainActivity;
 import com.example.kimma_test_ui_hs.R;
-import com.example.kimma_test_ui_hs.R.string;
 import com.example.kimma_test_ui_hs.SourceChartActivity;
 import com.example.tools.Tools;
-
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.view.ViewGroup;
-
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
-import android.widget.SearchView.OnQueryTextListener;
-import android.widget.SimpleAdapter;
 
+/*
+ * 查询模块
+ * 功能：溯源某一个售货机的商品历史数据，可模糊查询
+ *     进入查村模块，向服务器提交申请，获得所有收货机编号并在ListView中显示，
+ *     点击摸一个Item,弹出输入托盘号和货道号的输入框，将数据封装传回服务器
+ *     服务器传回该商品的各个阶段历史数据，分阶段显示
+ */
 @SuppressLint({ "InflateParams", "HandlerLeak" })
 public class QueryFragment extends ListFragment {	
 	
-	private static String regEx1 = "^[1-9]d*$";//匹配正整数 ,用于匹配上货数量，货道号
+	private static String regEx1 = "^[0-9]{1,2}$";//匹配正整数 ,用于匹配上货数量，货道号
     private static String regEx3 = "^[A-Za-z]{1}$";//用于匹配托盘号
+    
 	
 	OnArticleSelectedListener_QueryFregment mListener;
 	private ArrayAdapter<String> adapter;
 	private List<String> lists = new ArrayList<String>();
 	private EditText seach;
 	private String [] Items;
-	private String [] values;
+	private String [] values = {"null"};
 	private HttpClient httpClient;
 	private Tools tool = new Tools();
-	private String url = Tools.getUrl()+"login.do";
-	private List<Map> list = new ArrayList<Map>();
+//	private String url = Tools.getUrl()+"login.do";
+	private String url_0 = Tools.getUrl()+"vender/doListAll";
+	private String url_1 = Tools.getUrl()+"temperature/getProcess";
+	private List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 	
 	public interface OnArticleSelectedListener_QueryFregment{          
 		public void onArticleSelected(String str);
@@ -120,7 +107,8 @@ public class QueryFragment extends ListFragment {
 		final View rootView = inflater.inflate(R.layout.fragment_query, container,false);
 		
 		httpClient = tool.initHttp();
-		readNet(url, new HashMap<String,String>());
+		readNet(url_0, new HashMap<String,String>());
+//		readNet(url, new HashMap<String,String>());
 		lists.clear();
 		seach = (EditText)rootView.findViewById(R.id.query_input);
 		seach.addTextChangedListener(watcher);
@@ -188,10 +176,11 @@ public class QueryFragment extends ListFragment {
 					if(Avalidation(salver.getText().toString(),channe.getText().toString())){
 						//向服务器发送请求数据
 						Map<String,String> map = new HashMap<String,String>();
-						map.put("VenderNumber", vender_num);
-						map.put("salverNumber", salver.toString());
-						map.put("channelNumber", channe.toString());
-						readNet(url, map);
+						map.put("venderNumber", vender_num);
+						map.put("salverNumber", salver.getText().toString());
+						map.put("channelNumber", channe.getText().toString());
+						readNet(url_1, map);
+//						readNet(url, map);
 					}else{
 						Toast.makeText(getActivity(), "输入格式有误", Toast.LENGTH_SHORT).show();
 					}
@@ -243,23 +232,31 @@ public class QueryFragment extends ListFragment {
 	public void readNet(final String url,Map<String,String> map_data){
     	
     	if(map_data.size() != 0){
-    		new AsyncTask<Map<String,String>, Void, List<Map>>() {
+    		new AsyncTask<Map<String,String>, Void, List<Map<String,String>>>() {
                 @Override
-    			protected void onPostExecute(List<Map> result) {
+    			protected void onPostExecute(List<Map<String,String>> result) {
     				// TODO Auto-generated method stub
     				super.onPostExecute(result);
                     //数据解析
-    				
-    				
-    				Intent intent = new Intent(getActivity(),SourceChartActivity.class);
-    				intent.putExtra("SourceTempData", (Serializable)list);
-    				startActivity(intent);
-    				
+    				if(result.get(0).get("Result_Source_time").toString().contains("illegal_vender_number")){
+    					System.out.println("输入的venderNumber查不到对应的售货机");
+    				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_salver_number")){
+    					System.out.println("输入的venderNumber查不到对应的售货机");
+    				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_channel_number ")){
+    					System.out.println("输入的货道号超出该售货机的货道数量");
+    				}else if(result.get(0).get("Result_Source_time").toString().contains("none_commodity")){
+    					System.out.println("该货道上没有货物了");
+    				}else if(result.get(0).get("Result_Source_time").toString().contains("none_temperature_process")){
+    					System.out.println("没有查到该货物的温度与过程信息");
+    				}else{
+	    				Intent intent = new Intent(getActivity(),SourceChartActivity.class);
+	    				intent.putExtra("SourceTempData", (Serializable)list);
+	    				startActivity(intent);
+    				}
     				
     			}
-    			@SuppressWarnings("rawtypes")
 				@Override
-    			protected List<Map> doInBackground(Map<String, String>... arg0) {
+    			protected List<Map<String,String>> doInBackground(Map<String, String>... arg0) {
                     String value = null;
                     HttpPost post = new HttpPost(url);
                     //解决中文乱码问题
@@ -288,17 +285,18 @@ public class QueryFragment extends ListFragment {
     						try {
     							JSONObject objectStr = new JSONObject(value.toString());
     							Map<String,String> map_time = new HashMap<String,String>();
-    							map_time.put("Result_Source_time",objectStr.getString("Result_Source_time"));
+    							map_time.put("Result_Source_time",objectStr.getString("lastSubmitTimeOrFailInfo"));
     							list.add(map_time);
-    							JSONArray arrayJson = objectStr .getJSONArray("Result_Source_data");
+    							JSONArray arrayJson = objectStr .getJSONArray("temperatureProcessList");
+    							System.out.println("size:"+arrayJson.length());
     							for(int i = 0;i<arrayJson.length();i++){
     								Map<String,String> map = new HashMap<String,String>();
     								JSONObject tempJson = arrayJson.optJSONObject(i);
     								map.put("process", tempJson.getString("process"));
-    								map.put("data",tempJson.getString("data"));
+    								map.put("data",tempJson.getString("temperature"));
     								list.add(map);
     								System.out.println("process:"+tempJson.getString("process"));
-    								System.out.println("data:"+tempJson.getString("data"));	
+    								System.out.println("data:"+tempJson.getString("temperature"));	
     							}
     							
     						} catch (JSONException e) {
@@ -330,9 +328,14 @@ public class QueryFragment extends ListFragment {
     			protected void onPostExecute(String[] result) {
     				// TODO Auto-generated method stub
     				super.onPostExecute(result);
-    				lists.clear();
-    				Items = values;
-    				initListView(Items);
+    				if(result[0].contains("null")){
+    					Toast.makeText(getActivity(), "没有获得任何数据",Toast.LENGTH_SHORT).show();
+    				}else{
+    					lists.clear();
+        				Items = values;
+        				initListView(Items);
+    				}
+    				
     			}
     			@Override
     			protected String[] doInBackground(Map<String, String>... arg0) {
@@ -348,7 +351,7 @@ public class QueryFragment extends ListFragment {
     						value = EntityUtils.toString(respone.getEntity());
     						try {
     							JSONObject objectStr = new JSONObject(value.toString());
-    							JSONArray arrayJson = objectStr .getJSONArray("Result_Source_venderNum");
+    							JSONArray arrayJson = objectStr .getJSONArray("venderNumbers");
     						    values = new String [arrayJson.length()];
     							for(int i=0;i<arrayJson.length();i++) {  
     				                 values[i] = (String) arrayJson.get(i);

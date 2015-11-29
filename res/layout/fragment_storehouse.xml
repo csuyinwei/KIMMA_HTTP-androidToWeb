@@ -16,7 +16,7 @@
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginTop="100dp"
-            android:text="发货"
+            android:text="发货(缓存历史数据后操作)"
             android:background="@drawable/corners_button"/>
             
         
@@ -33,5 +33,7 @@
             android:layout_marginTop="80dp"
             android:text="收货"
             android:background="@drawable/corners_button"/>
+      
+             
 
 </LinearLayout>

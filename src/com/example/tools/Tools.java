@@ -1,10 +1,11 @@
 package com.example.tools;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,7 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ConnectTimeoutException;
@@ -21,13 +21,14 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
-
 import com.example.modle.TempPoint;
 
 @SuppressLint("SimpleDateFormat")
 public class Tools {
 	
-	private static final String BaseUrl = "http://192.168.1.229:8080/MyWebTest/";
+	private static final String BaseUrl = "http://115.159.23.85/cclms/phone/";
+	//private static final String BaseUrl = "http://192.168.1.229:8080/MyWebTest/";
+	//private static final String BaseUrl = "http://192.168.155.3:8080/cclms/phone/";
 	private static int k = -10;   //表示10分钟的间隔
 	private static SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
@@ -78,34 +79,36 @@ public class Tools {
 		List<TempPoint> points = new ArrayList<TempPoint>();
 		String timeStr = list.get(0).get("Result_Source_time").toString();
 		Date nearlyTime = sdf.parse(timeStr);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(nearlyTime);
 		ArrayList<int[]> arraylist = CutMapStringData(list);
+		ArrayList<Date> dates = CutData(nearlyTime,arraylist);
+		System.out.println("dates size:"+dates.size());
 		for(int i = 1;i<list.size();i++){
 			TempPoint point = new TempPoint();
-			calendar.add(Calendar.MINUTE,(Quantity(arraylist,i-1))*k);
-			Date date = calendar.getTime();
+			Date date = dates.get(list.size()-i-1);
+			System.out.println("每个过程的最新日期:"+sdf.format(date));
+			System.out.println("每个过程的最新process:"+list.get(i).get("process"));
 			point.setDate(date);
 			point.setProcess(list.get(i).get("process"));
-			
 			point.setData(arraylist.get(i-1));
 			points.add(point);
 		}
-		
-		/*
-		 * 
-		 * 
-		 */
-//		System.out.println(list.size());
-//		System.out.println(list.get(0).get("Result_Source_time").toString());
-//		for(int i = 1;i<list.size();i++){
-//			System.out.println(list.get(i).get("process").toString()+" "+list.get(i).get("data"));
-//		}
 		return points;
-		
-		
 	}
 	
+	private ArrayList<Date> CutData(Date date,ArrayList<int[]> array){
+		//System.out.println("接收到的原始时间;"+sdf.format(date));
+		ArrayList<Date> dates = new ArrayList<Date>();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		dates.add(calendar.getTime());
+		for(int i = array.size()-2;i>-1;i--){
+			calendar.add(Calendar.MINUTE,array.get(i+1).length*k);
+			//System.out.println("每个过程的最新日期:"+sdf.format(calendar.getTime()));
+			dates.add(calendar.getTime());
+		}
+		return dates;
+		
+	}
 	
 	private ArrayList<int[]> CutMapStringData(List<Map<String, String>> list2){
 		ArrayList<int[]> list = new ArrayList<int[]>();
@@ -121,14 +124,7 @@ public class Tools {
 		
 	}
 	
-	private int Quantity(ArrayList<int[]> list,int n){
-		int num = 0;
-		for(int i = 0;i<n;i++){
-			num+=list.get(i).length;
-		}
-		return num;
-		
-	}
+
 	
 	/*
 	 * 
@@ -142,15 +138,36 @@ public class Tools {
 		Date time = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(time);
-		for(int i = 0,n = i+1;i<data.length;i++){
+		for(int i = 0,n=data.length-1;i<data.length;i++,n--){
 			Map<String,String> map = new HashMap<String,String>();
 			calendar.add(Calendar.MINUTE,n*k);
-			map.put("key", sdf.format(calendar.getTime()));
-			map.put("value", data[i]);
-			list.add(map);
+			if(!data[i].equals("-1")){
+				Log.i("将非有效值过滤", String.valueOf(data[i]));
+				map.put("key", sdf.format(calendar.getTime()));
+				map.put("value", data[i]);
+				list.add(map);
+			}
+			continue;
 		}
 		return list;
-		
+	}
+	
+	
+	
+	public String[]  HaxToString(byte[] data,int n){
+        String [] str = new String[n];
+	    if (data == null || data.length <= 0) {   
+	        return null;   
+	    }   
+	    for (int i = 0; i < data.length; i++) { 
+	    
+	    		
+	    		str[i] = String.valueOf(data[i]);
+
+	    }
+	    
+		return str;
+
 	}
 
 }

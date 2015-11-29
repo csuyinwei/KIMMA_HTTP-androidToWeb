@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,20 +15,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import com.example.kimma_test_ui_hs.R;
-import com.example.kimma_test_ui_hs.WorkActivity;
 import com.example.tools.Tools;
-import com.zijunlin.Zxing.Demo.CaptureActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -43,36 +35,27 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/*
+ * 上货模块
+ * 功能：连接智能箱，获得芯片MAC地址，输入售货机编号，托盘号，货道号，上货数量，提交至服务器
+ * 
+ */
 @SuppressLint("HandlerLeak")
 public class MachineFragment extends Fragment{
 	
-	private TextView tx_BarCode,tx_lable,tx_showCode,tx_fragmentLayout;
+	private TextView tx_fragmentLayout;
 	private EditText et_row,et_list,et_number,et_machineID;
 	private Button bt_commit;
 	private FrameLayout frameLayout;
-	public static final int REQUSET = 1;
-	private String code="";
     private static final String TAG = "MachineFragment";  
     private static String regEx1 = "^[0-9]{1,2}$";//匹配正整数 ,用于匹配上货数量，货道号
     private static String regEx2 = "^[A-Za-z0-9]{1,15}$";////匹配1-15个数字或者字母，用于匹配售货机编号
-    private static String regEx3 = "^[A-Za-z]{1}$";//用于匹配托盘号
+    private static String regEx3 = "^[A-Z]{1}$";//用于匹配托盘号
     private String address = "";
     private HttpClient httpClient;
     private Tools tool = new Tools();
-    private String url = Tools.getUrl()+"work.do";
-    private WorkActivity activity = (WorkActivity)getActivity();
-    private Handler handler = new Handler(){
-    	@Override
-        public void handleMessage(Message msg) {
-    		try {
-    			String s = msg.obj.toString();
-    			activity.tx_http_connect_state.setText(s);
-    	    }catch (Exception e) {
-                e.printStackTrace();
-    	    }
-     }
-    };
-    
+    //private String url = Tools.getUrl()+"work.do";
+    private String url = Tools.getUrl()+"vender_inv/doSupply";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -83,9 +66,8 @@ public class MachineFragment extends Fragment{
         httpClient = tool.initHttp();
         SharedPreferences sharedPreferences= getActivity().getSharedPreferences("ADDRESS",Activity.MODE_PRIVATE); 
 		address = sharedPreferences.getString("address", "");
-        tx_BarCode = (TextView)view.findViewById(R.id.tx_BarCode);
-        tx_showCode = (TextView)view.findViewById(R.id.tx_showCode);
-        tx_lable = (TextView)view.findViewById(R.id.tx_lable);
+        
+        
         et_row = (EditText)view.findViewById(R.id.et_row);
         et_list = (EditText)view.findViewById(R.id.et_list);
         et_number = (EditText)view.findViewById(R.id.et_number);
@@ -94,31 +76,19 @@ public class MachineFragment extends Fragment{
         tx_fragmentLayout = (TextView)view.findViewById(R.id.machine_FragmentLayout_info);
         bt_commit = (Button)view.findViewById(R.id.bt_commit);
         bt_commit.setText("提交");
-        tx_BarCode.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(getActivity(),CaptureActivity.class);
-				startActivityForResult(intent, REQUSET);
-			}
-		});
         
         bt_commit.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				if(Avalidation(et_machineID.getText().toString(),et_row.getText().toString(),et_list.getText().toString(),et_number.getText().toString())){
 				   Map<String,String> map = new HashMap<String,String>();
 				   map.put("venderNumber", et_machineID.getText().toString()); //售货机编号
-				   map.put("salverNumber", et_row.getText().toString());     //托盘号
+				   map.put("salver", et_row.getText().toString());     //托盘号
 				   map.put("channelNumber",et_list.getText().toString());    //货道号
 				   map.put("inventoryQuantity",et_number.getText().toString());//上货数量
 				   map.put("ibNumber",address );         //MAC地址
 				   readNet(url, map);
 				}else{
-					
 				Toast.makeText(getActivity(), "提交失败，输入数据有误", Toast.LENGTH_SHORT).show();
 				et_machineID.setText("");
 				et_row.setText("");
@@ -132,14 +102,10 @@ public class MachineFragment extends Fragment{
 		
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		code = data.getExtras().getString(("result"));
-		tx_showCode.setText(code);
-		
-	}  
-	
+  
+	/*
+	 * 利用正则表达式校验输入参数
+	 */
 	private boolean Avalidation(String et_machineID,String et_row,String et_list,String et_number){
 		if(et_machineID.equals("") || et_row.equals("") || et_list.equals("") || et_number.equals("")) return false;
 		Pattern pattern1 = Pattern.compile(regEx1);
@@ -171,15 +137,19 @@ public class MachineFragment extends Fragment{
 	                    Toast.makeText(getActivity(),"操作成功", Toast.LENGTH_SHORT).show();
 	                    tx_fragmentLayout.setText("售货机编号: "+et_machineID.getText().toString()+"\n"+"托盘号: "+et_row.getText().toString()+"   货道号: "+et_list.getText().toString()+"\n"+"上货量: "+et_number.getText().toString());
 	                    CleanInput();
-					}else if(result.contains("fail")){
+					}else if(result.contains("illegal_vender_number")){
+						Toast.makeText(getActivity(),"无法根据输入的venderNumber查到对应的售货机", Toast.LENGTH_SHORT).show();
+					}else if(result.contains("illegal_ib_number")){
+						Toast.makeText(getActivity(),"无法根据输入的智能箱编号查到相应的配送批次信息", Toast.LENGTH_SHORT).show();
+					}else if(result.contains("illegal_salver_number")){
 						Toast.makeText(getActivity(),"操作失败", Toast.LENGTH_SHORT).show();
+					}else if(result.contains("illegal_channel_number ")){
+						Toast.makeText(getActivity(),"输入的货道号超出该售货机的货道数量", Toast.LENGTH_SHORT).show();
 					}else {
 						System.out.println("无数据传回");
 						Toast.makeText(getActivity(),"HTTP请求失败，请检查网络", Toast.LENGTH_LONG).show();
 					}
 				}
-				
-				
 			}
 			@Override
 			protected String doInBackground(Map<String,String>... arg0) {
@@ -217,13 +187,7 @@ public class MachineFragment extends Fragment{
 						System.out.println("服务器错误");
 					}
 				}  catch (Exception e) {
-					System.out.println("IOException");
-					String exception = tool.ExceptionCode(e);
-					System.out.println(exception);
 					e.printStackTrace();
-					Message msg = handler.obtainMessage();
-					msg.obj = exception;
-					handler.sendMessage(msg);					
 				}
 				return value;
 			}
