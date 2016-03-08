@@ -65,8 +65,15 @@ public class WorkActivity extends FragmentActivity {
     private Fragment dataFragment,storehouseFragment,machineFragment,despatchRegisterFragment;
     private Tools tool = new Tools();
     private List<Map<String,String>> list = null;
-    private static final String MyAction_startCash = "com.example.WorkAActivity.startCash";
-    private static final String MyAction_endCash = "com.example.WorkAActivity.endCash";
+//    private static final String MyAction_startCash = "com.example.WorkAActivity.startCash";
+//    private static final String MyAction_endCash = "com.example.WorkAActivity.endCash";
+    
+    private boolean isCash = false;
+
+
+	public boolean isCash() {
+		return isCash;
+	}
 
 
 	private boolean isRead = false;
@@ -115,9 +122,9 @@ public class WorkActivity extends FragmentActivity {
 				final byte[] data = {(byte) 0xA1,0x30,0x00,0x00,0x00};
 				bt_flash.setText("正在缓存数据......");
 				//发送开始接受数据的广播
-				Intent intent  = new Intent();
- 				intent.setAction(MyAction_startCash);
- 				sendBroadcast(intent);
+//				Intent intent  = new Intent();
+// 				intent.setAction(MyAction_startCash);
+// 				sendBroadcast(intent);
 				new Thread(){ 
 				     public void run(){ 
 				        // do something 
@@ -323,9 +330,10 @@ public class WorkActivity extends FragmentActivity {
 				Log.i("workActivity中List数据大小", list.size()+"");
 				bt_flash.setText("缓存数据完成");
 				bt_flash.setEnabled(false);
-				Intent intent  = new Intent();
- 				intent.setAction(MyAction_endCash);
- 				sendBroadcast(intent);
+//				Intent intent  = new Intent();
+// 				intent.setAction(MyAction_endCash);
+// 				sendBroadcast(intent);
+				isCash = true;
 			}
 		};
 		

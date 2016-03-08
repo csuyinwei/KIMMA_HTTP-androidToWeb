@@ -35,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * 对数据的处理类：获得当前温度数据和历史温度数据
@@ -56,12 +57,12 @@ public class DataFragment extends Fragment {
 
 		IntentFilter filter_one =new IntentFilter("com.example.bluetooth_one");//注册自定义广播，用于接收当前温度数据
 		getActivity().registerReceiver(MyBroadeReceive_one, filter_one);
-	    
-		IntentFilter filter_startCash =new IntentFilter("com.example.WorkAActivity.startCash");//注册自定义广播
-		getActivity().registerReceiver(MyBroadeReceive_startCash, filter_startCash);
 		
-		IntentFilter filter_endCash =new IntentFilter("com.example.WorkAActivity.endCash");//注册自定义广播
-		getActivity().registerReceiver(MyBroadeReceive_endCash, filter_endCash);
+//		IntentFilter filter_startCash =new IntentFilter("com.example.WorkAActivity.startCash");//注册自定义广播
+//		getActivity().registerReceiver(MyBroadeReceive_startCash, filter_startCash);
+		
+//		IntentFilter filter_endCash =new IntentFilter("com.example.WorkAActivity.endCash");//注册自定义广播
+//		getActivity().registerReceiver(MyBroadeReceive_endCash, filter_endCash);
 		
 		mSurface = (SurfaceView)rootView.findViewById(R.id.thermograph);//初始化绘图配置(温度计)
 		mSurface.setZOrderOnTop(true);
@@ -74,7 +75,6 @@ public class DataFragment extends Fragment {
 		bt_getTempNow.setText("当前温度");
 		bt_getTempAll = (Button)rootView.findViewById(R.id.GetTempAll);
 		bt_getTempAll.setText("历史温度曲线");
-		bt_getTempAll.setEnabled(false);
 		bt_getTempNow.setOnClickListener(new View.OnClickListener() {  
 			 WorkActivity workActivity = (WorkActivity)getActivity();
 		     Bluetooth tool = workActivity.bluetoothTool;
@@ -93,12 +93,23 @@ public class DataFragment extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				if(((WorkActivity) getActivity()).getList() != null){
-					Log.i("点击获取历史数据",((WorkActivity) getActivity()).getList().size()+"");
-					Intent intent = new Intent(getActivity(),ChartActivity.class);
-					intent.putExtra("TempData", (Serializable)((WorkActivity) getActivity()).getList());
-					startActivity(intent);
+				Log.i("isCash-数据模块",((WorkActivity) getActivity()).isCash()+"");
+				if(((WorkActivity) getActivity()).isCash())
+				{//isCash =true  表示数据缓存完成
+					if(((WorkActivity) getActivity()).getList() != null){
+						Log.i("点击获取历史数据",((WorkActivity) getActivity()).getList().size()+"");
+						Intent intent = new Intent(getActivity(),ChartActivity.class);
+						intent.putExtra("TempData", (Serializable)((WorkActivity) getActivity()).getList());
+						startActivity(intent);
+					}else
+					{//数据为空
+						Toast.makeText(getActivity(), "数据为空", Toast.LENGTH_SHORT).show();
+					}
+				}else
+				{//还未缓存数据
+					Toast.makeText(getActivity(), "请先缓存历史数据！", Toast.LENGTH_SHORT).show();
 				}
+				
 			}
 		});
 
@@ -190,20 +201,22 @@ public class DataFragment extends Fragment {
 		public void onReceive(Context arg0, Intent arg1) {
 			// TODO Auto-generated method stub
 			bt_getTempNow.setEnabled(false);
+			bt_getTempAll.setEnabled(false);
+			
 		}
 		
 	};
 	
-	private BroadcastReceiver MyBroadeReceive_endCash =new  BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context arg0, Intent arg1) {
-			// TODO Auto-generated method stub
-			bt_getTempNow.setEnabled(true);
-			bt_getTempAll.setEnabled(true);
-		}
-		
-	};
+//	private BroadcastReceiver MyBroadeReceive_endCash =new  BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context arg0, Intent arg1) {
+//			// TODO Auto-generated method stub
+//			bt_getTempNow.setEnabled(true);
+//			bt_getTempAll.setEnabled(true);
+//		}
+//		
+//	};
 	
 	
 	

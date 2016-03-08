@@ -60,15 +60,15 @@ public class StorehouseFragment extends Fragment{
 		Log.d(TAG, "StorehouseFragment-----onCreateView");   
         View view = inflater.inflate(R.layout.fragment_storehouse, container, false);  
         
-        IntentFilter filter_endCash =new IntentFilter("com.example.WorkAActivity.endCash");//注册自定义广播
-		getActivity().registerReceiver(MyBroadeReceive_endCash, filter_endCash);
+//      IntentFilter filter_endCash =new IntentFilter("com.example.WorkAActivity.endCash");//注册自定义广播
+//		getActivity().registerReceiver(MyBroadeReceive_endCash, filter_endCash);
         
         SharedPreferences sharedPreferences= getActivity().getSharedPreferences("ADDRESS",Activity.MODE_PRIVATE); 
 		address = sharedPreferences.getString("address", "");
         httpClient = tool.initHttp();
         bt_start = (Button)view.findViewById(R.id.bt_start);
         bt_end = (Button)view.findViewById(R.id.bt_end);
-        bt_end.setEnabled(false);
+       // bt_end.setEnabled(false);
         bt_start.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -104,38 +104,47 @@ public class StorehouseFragment extends Fragment{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				final EditText inputServer = new EditText(getActivity());
-		        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		        builder.setTitle("商品收货地信息").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
-		                .setNegativeButton("取消", null);
-		        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		               inputServer.getText().toString();
-		               if(inputServer.getText().toString().equals("")){
-		            	  Toast.makeText(getActivity(), "商品收货地不能为空!",Toast.LENGTH_SHORT).show(); 
-		               }else{
-		            	   if(!address.equals("")){
-		            		   Map<String,String> map = new HashMap<String,String>();
-			            	   map.put("intelligentBoxNumber", address);
-			            	   map.put("arrivalPlace",inputServer.getText().toString());
-			            	   List<Map<String,String>> list = ((WorkActivity) getActivity()).getList();
-			            	   StringBuilder sb = new StringBuilder();
-			            	   for(int i =0;i<list.size()-1;i++){
-			            		   String str = list.get(i).get("value");
-			            		   sb.append(str+",");
+				Log.i("isCash-收货模块",((WorkActivity) getActivity()).isCash()+"");
+				if(((WorkActivity) getActivity()).isCash())
+				{
+					final EditText inputServer = new EditText(getActivity());
+			        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			        builder.setTitle("商品收货地信息").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
+			                .setNegativeButton("取消", null);
+			        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			            public void onClick(DialogInterface dialog, int which) {
+			               inputServer.getText().toString();
+			               if(inputServer.getText().toString().equals("")){
+			            	  Toast.makeText(getActivity(), "商品收货地不能为空!",Toast.LENGTH_SHORT).show(); 
+			               }else{
+			            	   if(!address.equals("")){
+			            		   Map<String,String> map = new HashMap<String,String>();
+				            	   map.put("intelligentBoxNumber", address);
+				            	   map.put("arrivalPlace",inputServer.getText().toString());
+				            	   List<Map<String,String>> list = ((WorkActivity) getActivity()).getList();
+				            	   StringBuilder sb = new StringBuilder();
+				            	   for(int i =0;i<list.size()-1;i++){
+				            		   String str = list.get(i).get("value");
+				            		   sb.append(str+",");
+				            	   }
+				            	   sb.append(list.get(list.size()-1).get("value"));
+				            	   System.out.println(sb);
+				            	   map.put("temperature", sb.toString());
+				            	   System.out.println(sb.toString());
+				            	   readNet(url_arrive, map);
+			            	   }else{
+			            		   Toast.makeText(getActivity(), "一会再来",Toast.LENGTH_SHORT).show();
 			            	   }
-			            	   sb.append(list.get(list.size()-1).get("value"));
-			            	   System.out.println(sb);
-			            	   map.put("temperature", sb.toString());
-			            	   System.out.println(sb.toString());
-			            	   readNet(url_arrive, map);
-		            	   }else{
-		            		   Toast.makeText(getActivity(), "一会再来",Toast.LENGTH_SHORT).show();
-		            	   }
-		               }
-		             }
-		        });
-		        builder.show();
+			               }
+			             }
+			        });
+			        builder.show();
+					
+				}else
+				{
+					Toast.makeText(getActivity(), "请先缓存数据！",Toast.LENGTH_SHORT).show();
+				}
+				
 			}
 		});
         return view; 

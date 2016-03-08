@@ -26,9 +26,10 @@ import com.example.modle.TempPoint;
 @SuppressLint("SimpleDateFormat")
 public class Tools {
 	
-	private static final String BaseUrl = "http://115.159.23.85/cclms/phone/";
+	//private static final String BaseUrl = "http://115.159.23.85/cclms/phone/";
 	//private static final String BaseUrl = "http://192.168.1.229:8080/MyWebTest/";
-	//private static final String BaseUrl = "http://192.168.155.3:8080/cclms/phone/";
+	//private static final String BaseUrl = "http://192.168.1.101:8080/cclms/phone/";//家里的测试服务器
+	private static final String BaseUrl = "http://115.28.74.226:8080/cclms/phone/";//阿里云服务器
 	private static int k = -10;   //表示10分钟的间隔
 	private static SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	

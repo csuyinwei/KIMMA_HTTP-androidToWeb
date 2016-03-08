@@ -37,6 +37,7 @@ import android.os.Message;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,7 @@ public class QueryFragment extends ListFragment {
 	private List<String> lists = new ArrayList<String>();
 	private EditText seach;
 	private String [] Items;
-	private String [] values = {"null"};
+	private String [] values = null;
 	private HttpClient httpClient;
 	private Tools tool = new Tools();
 //	private String url = Tools.getUrl()+"login.do";
@@ -240,14 +241,19 @@ public class QueryFragment extends ListFragment {
                     //数据解析
     				if(result.get(0).get("Result_Source_time").toString().contains("illegal_vender_number")){
     					System.out.println("输入的venderNumber查不到对应的售货机");
+    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
     				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_salver_number")){
     					System.out.println("输入的venderNumber查不到对应的售货机");
+    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
     				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_channel_number ")){
     					System.out.println("输入的货道号超出该售货机的货道数量");
+    					Toast.makeText(getActivity(), "输入的货道号超出该售货机的货道数量",Toast.LENGTH_SHORT).show();
     				}else if(result.get(0).get("Result_Source_time").toString().contains("none_commodity")){
     					System.out.println("该货道上没有货物了");
+    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
     				}else if(result.get(0).get("Result_Source_time").toString().contains("none_temperature_process")){
     					System.out.println("没有查到该货物的温度与过程信息");
+    					Toast.makeText(getActivity(), "没有查到该货物的温度与过程信息",Toast.LENGTH_SHORT).show();
     				}else{
 	    				Intent intent = new Intent(getActivity(),SourceChartActivity.class);
 	    				intent.putExtra("SourceTempData", (Serializable)list);
@@ -328,7 +334,8 @@ public class QueryFragment extends ListFragment {
     			protected void onPostExecute(String[] result) {
     				// TODO Auto-generated method stub
     				super.onPostExecute(result);
-    				if(result[0].contains("null")){
+    				//Log.i("result",result.toString());
+    				if(result==null){
     					Toast.makeText(getActivity(), "没有获得任何数据",Toast.LENGTH_SHORT).show();
     				}else{
     					lists.clear();
@@ -339,16 +346,18 @@ public class QueryFragment extends ListFragment {
     			}
     			@Override
     			protected String[] doInBackground(Map<String, String>... arg0) {
-                    String value = null;
+                    String value = "null";
                     HttpPost post = new HttpPost(url);
                     try {
     					HttpResponse respone = httpClient.execute(post);
     					int state = respone.getStatusLine().getStatusCode()/100;
     					System.out.println("响应状态码:"+respone.getStatusLine().getStatusCode());
+    					
     					if(state == 1){
     						System.out.println("临时响应");
     					}else if(state == 2){
     						value = EntityUtils.toString(respone.getEntity());
+    						Log.i("value", value);
     						try {
     							JSONObject objectStr = new JSONObject(value.toString());
     							JSONArray arrayJson = objectStr .getJSONArray("venderNumbers");
