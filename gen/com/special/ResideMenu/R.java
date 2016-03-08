@@ -9,24 +9,24 @@ package com.special.ResideMenu;
 public final class R {
 	public static final class drawable {
 		public static final int ic_launcher = 0x7f02006a;
-		public static final int shadow = 0x7f020074;
+		public static final int shadow = 0x7f020079;
 	}
 	public static final class id {
-		public static final int iv_background = 0x7f070092;
-		public static final int iv_icon = 0x7f070099;
-		public static final int iv_shadow = 0x7f070093;
-		public static final int layout_left_menu = 0x7f070096;
-		public static final int layout_right_menu = 0x7f070098;
-		public static final int sv_left_menu = 0x7f070095;
-		public static final int sv_menu_holder = 0x7f070094;
-		public static final int sv_right_menu = 0x7f070097;
-		public static final int tv_title = 0x7f07009a;
+		public static final int iv_background = 0x7f070096;
+		public static final int iv_icon = 0x7f07009d;
+		public static final int iv_shadow = 0x7f070097;
+		public static final int layout_left_menu = 0x7f07009a;
+		public static final int layout_right_menu = 0x7f07009c;
+		public static final int sv_left_menu = 0x7f070099;
+		public static final int sv_menu_holder = 0x7f070098;
+		public static final int sv_right_menu = 0x7f07009b;
+		public static final int tv_title = 0x7f07009e;
 	}
 	public static final class layout {
-		public static final int residemenu_custom = 0x7f030028;
-		public static final int residemenu_custom_left_scrollview = 0x7f030029;
-		public static final int residemenu_custom_right_scrollview = 0x7f03002a;
-		public static final int residemenu_item = 0x7f03002b;
+		public static final int residemenu_custom = 0x7f03002a;
+		public static final int residemenu_custom_left_scrollview = 0x7f03002b;
+		public static final int residemenu_custom_right_scrollview = 0x7f03002c;
+		public static final int residemenu_item = 0x7f03002d;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f060000;

@@ -66,6 +66,10 @@
             android:name=".CalendarActivity"
             android:label="@string/title_activity_calendar" >
         </activity>
+        <activity
+            android:name=".MipcaActivityCapture"
+            android:label="@string/title_activity_TwoBarSacn" >
+        </activity>
     </application>
 
 </manifest>

@@ -10,7 +10,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="10dp">
+        
+ 
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="点击右侧按钮扫描售货机二维码"
+	        android:textColor="#FF0000"
+            android:textSize="15sp"
+            android:layout_marginLeft="40dp"
+            android:gravity="left"
+	        android:layout_weight="70" />
+        
+         <TextView
+	        android:id="@+id/tx_TwoBarCodeIcon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginTop="5dp"
+	        android:drawableTop="@drawable/code"
+	        android:paddingTop="10dp"
+	        android:layout_weight="30"/>
+    </LinearLayout>
 	        
         <EditText 
             android:id="@+id/et_machineID"
@@ -23,8 +50,10 @@
             android:hint="输入售货机编号"
             android:textColor="#000000"
             android:textSize="20dp"
-            android:background="@null">
+            android:background="@null"
+            android:layout_weight="70">
         </EditText>
+	        
         <LinearLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
@@ -38,7 +67,7 @@
 	            android:gravity="left"
 	            android:layout_marginRight="5dp"
 	            android:layout_marginLeft="40dp"
-	            android:paddingTop="20dp"
+	            android:paddingTop="2dp"
 	            android:hint="输入托盘号"
 	            android:textColor="#000000"
 	            android:textSize="20sp"
@@ -53,7 +82,7 @@
 	            android:gravity="left"
 	            android:layout_marginLeft="5dp"
 	            android:layout_marginRight="40dp"
-	            android:paddingTop="20dp"
+	            android:paddingTop="10dp"
 	            android:hint="输入货道号"
 	            android:textColor="#000000"
 	            android:textSize="20sp"
@@ -68,7 +97,7 @@
             android:gravity="left"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:paddingTop="20dp"
+            android:paddingTop="10dp"
             android:hint="输入补货数量"
             android:textColor="#000000"
             android:textSize="20dp"
@@ -96,7 +125,7 @@
             android:padding="10dp"
             android:layout_gravity="bottom"
             android:id="@+id/machine_FragmentLayout"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginBottom="0dp"

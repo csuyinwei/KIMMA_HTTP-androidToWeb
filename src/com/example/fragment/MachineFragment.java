@@ -15,11 +15,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
+import com.example.kimma_test_ui_hs.MipcaActivityCapture;
 import com.example.kimma_test_ui_hs.R;
 import com.example.tools.Tools;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,7 +47,9 @@ import android.widget.Toast;
 @SuppressLint("HandlerLeak")
 public class MachineFragment extends Fragment{
 	
-	private TextView tx_fragmentLayout;
+	private final static int SCANNIN_GREQUEST_CODE = 3;
+	
+	private TextView tx_fragmentLayout, tx_TwoBarCode;
 	private EditText et_row,et_list,et_number,et_machineID;
 	private Button bt_commit;
 	private FrameLayout frameLayout;
@@ -76,6 +82,8 @@ public class MachineFragment extends Fragment{
         tx_fragmentLayout = (TextView)view.findViewById(R.id.machine_FragmentLayout_info);
         bt_commit = (Button)view.findViewById(R.id.bt_commit);
         bt_commit.setText("提交");
+        tx_TwoBarCode = (TextView)view.findViewById(R.id.tx_TwoBarCodeIcon);
+        
         
         bt_commit.setOnClickListener(new OnClickListener() {
 			@Override
@@ -97,12 +105,53 @@ public class MachineFragment extends Fragment{
 				}
 			}
 		});
+        
+        tx_TwoBarCode.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(getActivity(), MipcaActivityCapture.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
+			}
+		});
        
         return view; 
 		
 	}
+	
+	
+	
+	
 
   
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		System.out.println("requestCode:"+requestCode);
+		System.out.println("resultCode:"+resultCode);
+		switch (requestCode) {
+		case SCANNIN_GREQUEST_CODE:
+			if(resultCode == -1){
+				Bundle bundle = data.getExtras();
+				//显示扫描到的内容
+				et_machineID.setText(bundle.getString("result"));
+				
+			}
+			break;
+		}
+    }	
+
+	
+
+
+
+
+
+
 	/*
 	 * 利用正则表达式校验输入参数
 	 */

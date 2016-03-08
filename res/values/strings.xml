@@ -11,5 +11,7 @@
     <string name="login">LoginActivity</string>
     <string name="title_activity_source_chart">SourceChartActivity</string>
     <string name="title_activity_calendar">CalendarActivity</string>
+    <string name="title_activity_TwoBarSacn">strings.xml</string>
+    <string name="scan_text">将二维码放入框内, 即可自动扫描</string>
 
 </resources>
