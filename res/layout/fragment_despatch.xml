@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="70" />
+        
+         <TextView
+	        android:id="@+id/tx_BarCodeIcon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginTop="20dp"
+	        android:drawableTop="@drawable/code"
+	        android:paddingTop="10dp"
+	        android:layout_weight="30"/>
+    </LinearLayout>
+    
+    <LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal">
+         <TextView
+		        android:id="@+id/tx_lable"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:layout_weight="70"
+		        android:gravity="left"
+		        android:textSize="20sp"
+		        android:layout_marginLeft="40dp"
+		        android:text="条码号 "
+		        android:textColor="#000000" />
+	        <TextView
+		        android:id="@+id/tx_showCode"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:layout_weight="30"
+		        android:hint="扫一扫商品条码"
+		        android:gravity="center"
+		        android:textSize="20sp"
+		        android:textColor="#000000" />
+    </LinearLayout>
+    
+    
+    <Button
+         android:id="@+id/bt_productDate"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="设置生产日期" 
+         android:gravity="center"
+	     android:textSize="20sp"
+	     android:paddingTop="2dp"
+	     android:paddingBottom="2dp"
+	     android:layout_marginLeft="40dp"
+	     android:layout_marginRight="40dp"
+	     android:layout_marginTop="20dp"
+	     android:background="@drawable/corners_button"/>
+
+    <EditText
+        android:id="@+id/et_productOrigin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+	     android:textSize="20sp"
+	     android:paddingTop="2dp"
+	     android:paddingBottom="2dp"
+	     android:layout_marginLeft="40dp"
+	     android:layout_marginRight="40dp"
+	     android:layout_marginTop="20dp"
+	     android:background="@null"
+	     android:hint="输入商品生产地" />
+    
+    <Button
+         android:id="@+id/bt_despatchInfoSubmit"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="提交配货信息" 
+         android:gravity="center"
+	     android:textSize="20sp"
+	     android:paddingTop="2dp"
+	     android:paddingBottom="2dp"
+	     android:layout_marginLeft="40dp"
+	     android:layout_marginRight="40dp"
+	     android:layout_marginTop="20dp"
+	     android:background="@drawable/corners_button"/>
+    
+</LinearLayout>
