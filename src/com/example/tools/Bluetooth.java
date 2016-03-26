@@ -145,10 +145,10 @@ public class Bluetooth {
 							}
 						}else{
 					    sum+=data.length;
-					    System.out.println("size:"+sum);
-					    for(int i = 0;i<16;i++){
-					    	System.out.println("收到的数据:"+data[i]);
-					    }
+//					    System.out.println("size:"+sum);
+//					    for(int i = 0;i<16;i++){
+//					    	System.out.println("收到的数据:"+data[i]);
+//					    }
 					    
 					    data_all = ArrayUtils.addAll(data_all, data);
 					    

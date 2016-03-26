@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.example.kimma_test_ui_hs.LoginActivity;
 import com.example.kimma_test_ui_hs.R;
 import com.example.kimma_test_ui_hs.SourceChartActivity;
+import com.example.tools.HttpTool;
 import com.example.tools.Tools;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -64,7 +65,7 @@ public class QueryFragment extends ListFragment {
 	private ArrayAdapter<String> adapter;
 	private List<String> lists = new ArrayList<String>();
 	private EditText seach;
-	private String [] Items;
+	private String [] Items ;
 	private String [] values = null;
 	private HttpClient httpClient;
 	private Tools tool = new Tools();
@@ -124,7 +125,9 @@ public class QueryFragment extends ListFragment {
 			lists.clear();
 			System.out.println(arg0.toString());
 			ArrayList<String> list = new ArrayList<String>();
+			if(Items==null) return ;
 			for(int i = 0;i<Items.length;i++){
+				if(Items[i]==null && "null".equals(Items[i])) return;
 				if(Items[i].contains(arg0.toString())){
 					list.add(Items[i]);
 				}
@@ -229,172 +232,212 @@ public class QueryFragment extends ListFragment {
      * 500   （服务器内部错误）  服务器遇到错误，无法完成请求。
      * 
      */
-    @SuppressWarnings("unchecked")
 	public void readNet(final String url,Map<String,String> map_data){
     	
     	if(map_data.size() != 0){
-    		new AsyncTask<Map<String,String>, Void, List<Map<String,String>>>() {
-                @Override
-    			protected void onPostExecute(List<Map<String,String>> result) {
-    				// TODO Auto-generated method stub
-    				super.onPostExecute(result);
-                    //数据解析
-    				if(result.get(0).get("Result_Source_time").toString().contains("illegal_vender_number")){
-    					System.out.println("输入的venderNumber查不到对应的售货机");
-    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
-    				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_salver_number")){
-    					System.out.println("输入的venderNumber查不到对应的售货机");
-    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
-    				}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_channel_number ")){
-    					System.out.println("输入的货道号超出该售货机的货道数量");
-    					Toast.makeText(getActivity(), "输入的货道号超出该售货机的货道数量",Toast.LENGTH_SHORT).show();
-    				}else if(result.get(0).get("Result_Source_time").toString().contains("none_commodity")){
-    					System.out.println("该货道上没有货物了");
-    					Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
-    				}else if(result.get(0).get("Result_Source_time").toString().contains("none_temperature_process")){
-    					System.out.println("没有查到该货物的温度与过程信息");
-    					Toast.makeText(getActivity(), "没有查到该货物的温度与过程信息",Toast.LENGTH_SHORT).show();
-    				}else{
-	    				Intent intent = new Intent(getActivity(),SourceChartActivity.class);
-	    				intent.putExtra("SourceTempData", (Serializable)list);
-	    				startActivity(intent);
-    				}
-    				
-    			}
-				@Override
-    			protected List<Map<String,String>> doInBackground(Map<String, String>... arg0) {
-                    String value = null;
-                    HttpPost post = new HttpPost(url);
-                    //解决中文乱码问题
-                    post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                    try {
-    					List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>(); 
-    					int size = arg0[0].size();
-    					System.out.println("size:"+size);
-    					int i = 0;
-						while(i<size){
-							list.add(new BasicNameValuePair(arg0[0].keySet().toArray()[i].toString(), arg0[0].get(arg0[0].keySet().toArray()[i].toString())));
-							System.out.println("Key:"+arg0[0].keySet().toArray()[i].toString()+" "+"value:"+arg0[0].get(arg0[0].keySet().toArray()[i].toString()));
-							i++;
-						}
-						HttpEntity entity = new UrlEncodedFormEntity(list,HTTP.UTF_8);
-						post.setEntity(entity);
-    				} catch (UnsupportedEncodingException e1) {}
-                    try {
-    					HttpResponse respone = httpClient.execute(post);
-    					int state = respone.getStatusLine().getStatusCode()/100;
-    					System.out.println("响应状态码:"+respone.getStatusLine().getStatusCode());
-    					if(state == 1){
-    						System.out.println("临时响应");
-    					}else if(state == 2){
-    						value = EntityUtils.toString(respone.getEntity());
-    						try {
-    							JSONObject objectStr = new JSONObject(value.toString());
-    							Map<String,String> map_time = new HashMap<String,String>();
-    							map_time.put("Result_Source_time",objectStr.getString("lastSubmitTimeOrFailInfo"));
-    							list.add(map_time);
-    							JSONArray arrayJson = objectStr .getJSONArray("temperatureProcessList");
-    							System.out.println("size:"+arrayJson.length());
-    							for(int i = 0;i<arrayJson.length();i++){
-    								Map<String,String> map = new HashMap<String,String>();
-    								JSONObject tempJson = arrayJson.optJSONObject(i);
-    								map.put("process", tempJson.getString("process"));
-    								map.put("data",tempJson.getString("temperature"));
-    								list.add(map);
-    								System.out.println("process:"+tempJson.getString("process"));
-    								System.out.println("data:"+tempJson.getString("temperature"));	
-    							}
-    							
-    						} catch (JSONException e) {
-    							e.printStackTrace();
-    						}
-    					}else if(state == 3){
-    						System.out.println("重定向");
-    					}else if(state == 4){
-    						System.out.println("请求错误");
-    					}else if(state == 5){
-    						System.out.println("服务器错误");
-    					}
-    					
-    				}  catch (Exception e) {
-    					System.out.println("IOException");
-    					String exception = tool.ExceptionCode(e);
-    					System.out.println(exception);
-    					e.printStackTrace();
-    					Message msg = handler.obtainMessage();
-    					msg.obj = exception;
-    					handler.sendMessage(msg);					
-    				}
-    				return list;
-    			}
-    		}.execute(map_data);
-    	}else{
-    		new AsyncTask<Map<String,String>, Void, String []>() {
-                @Override
-    			protected void onPostExecute(String[] result) {
-    				// TODO Auto-generated method stub
-    				super.onPostExecute(result);
-    				//Log.i("result",result.toString());
-    				if(result==null){
-    					Toast.makeText(getActivity(), "没有获得任何数据",Toast.LENGTH_SHORT).show();
-    				}else{
-    					lists.clear();
-        				Items = values;
-        				initListView(Items);
-    				}
-    				
-    			}
-    			@Override
-    			protected String[] doInBackground(Map<String, String>... arg0) {
-                    String value = "null";
-                    HttpPost post = new HttpPost(url);
-                    try {
-    					HttpResponse respone = httpClient.execute(post);
-    					int state = respone.getStatusLine().getStatusCode()/100;
-    					System.out.println("响应状态码:"+respone.getStatusLine().getStatusCode());
-    					
-    					if(state == 1){
-    						System.out.println("临时响应");
-    					}else if(state == 2){
-    						value = EntityUtils.toString(respone.getEntity());
-    						Log.i("value", value);
-    						try {
-    							JSONObject objectStr = new JSONObject(value.toString());
-    							JSONArray arrayJson = objectStr .getJSONArray("venderNumbers");
-    						    values = new String [arrayJson.length()];
-    							for(int i=0;i<arrayJson.length();i++) {  
-    				                 values[i] = (String) arrayJson.get(i);
-    				                 System.out.println(arrayJson.get(i).toString());
-    						    } 
-    							
-    						} catch (JSONException e) {
-    							e.printStackTrace();
-    						}
-    					}else if(state == 3){
-    						System.out.println("重定向");
-    					}else if(state == 4){
-    						System.out.println("请求错误");
-    					}else if(state == 5){
-    						System.out.println("服务器错误");
-    					}
-    					
-    				}  catch (Exception e) {
-    					System.out.println("IOException");
-    					String exception = tool.ExceptionCode(e);
-    					System.out.println(exception);
-    					e.printStackTrace();
-    					Message msg = handler.obtainMessage();
-    					msg.obj = exception;
-    					handler.sendMessage(msg);					
-    				}
-    				return values;
-    			}
-    		}.execute(map_data);
+    		this.getOneOfVenderData(url, map_data);
+    	}
+    	else{
     		
+    		this.getAllVenderID(url, map_data);
     	}
     	 
 		
 	}
+    
+    /*
+     * 函数抽出
+     * map_data.size() != 0
+     * 含义：提交自动售货机信息，获得相应数据的时候
+     * 
+     */
+    @SuppressWarnings("unchecked")
+	private void getOneOfVenderData(final String url,Map<String,String> map_data){
+    	new AsyncTask<Map<String,String>, Void, List<Map<String,String>>>() {
+            @Override
+			protected void onPostExecute(List<Map<String,String>> result) {
+				// TODO Auto-generated method stub
+				super.onPostExecute(result);
+                //数据解析
+				
+				analysisData(result);
+			}
+			@Override
+			protected List<Map<String,String>> doInBackground(Map<String, String>... arg0) {
+                String value = null;
+                HttpPost post = null;
+				try {
+					post = HttpTool.SengRequest(url, arg0);
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+                try {
+					HttpResponse respone = httpClient.execute(post);
+					int state = respone.getStatusLine().getStatusCode()/100;
+					System.out.println("响应状态码:"+respone.getStatusLine().getStatusCode());
+					if(state == 1){
+						System.out.println("临时响应");
+					}else if(state == 2){
+						value = EntityUtils.toString(respone.getEntity());
+						System.out.println("溯源模块HTTP收到正确响应响应:"+System.currentTimeMillis());
+						try {
+							JSONObject objectStr = new JSONObject(value.toString());
+							Map<String,String> map_time = new HashMap<String,String>();
+							map_time.put("Result_Source_time",objectStr.getString("lastSubmitTimeOrFailInfo"));
+							list.add(map_time);
+							JSONArray arrayJson = objectStr .getJSONArray("temperatureProcessList");
+							System.out.println("size:"+arrayJson.length());
+							for(int i = 0;i<arrayJson.length();i++){
+								Map<String,String> map = new HashMap<String,String>();
+								JSONObject tempJson = arrayJson.optJSONObject(i);
+								map.put("process", tempJson.getString("process"));
+								map.put("data",tempJson.getString("temperature"));
+								list.add(map);
+								System.out.println("process:"+tempJson.getString("process"));
+								System.out.println("data:"+tempJson.getString("temperature"));	
+							}
+							
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}else if(state == 3){
+						System.out.println("重定向");
+					}else if(state == 4){
+						System.out.println("请求错误");
+					}else if(state == 5){
+						System.out.println("服务器错误");
+					}
+					
+				}  catch (Exception e) {
+					System.out.println("IOException");
+					String exception = tool.ExceptionCode(e);
+					System.out.println(exception);
+					e.printStackTrace();
+					Message msg = handler.obtainMessage();
+					msg.obj = exception;
+					handler.sendMessage(msg);					
+				}
+				return list;
+			}
+		}.execute(map_data);
+    }
+    
+    /*
+     * 对getOneOfVenderData()返回数据的解析
+     * 
+     */
+    private void analysisData(List<Map<String,String>> result){
+    	
+    	if(result==null) {
+    		System.out.println("result为空异常!");
+    		Toast.makeText(getActivity(), "客户端响应异常",Toast.LENGTH_SHORT).show();
+    		return;
+    	}
+    	
+    	System.out.println("查询模块result:"+ result.get(0).get("Result_Source_time").toString());
+    	
+    	if(result.get(0).get("Result_Source_time").toString().contains("illegal_vender_number")){
+			System.out.println("输入的venderNumber查不到对应的售货机");
+			Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
+		}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_salver_number")){
+			System.out.println("输入的venderNumber查不到对应的售货机");
+			Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
+		}else if(result.get(0).get("Result_Source_time").toString().contains("illegal_channel_number ")){
+			System.out.println("输入的货道号超出该售货机的货道数量");
+			Toast.makeText(getActivity(), "输入的货道号超出该售货机的货道数量",Toast.LENGTH_SHORT).show();
+		}else if(result.get(0).get("Result_Source_time").toString().contains("none_commodity")){
+			System.out.println("该货道上没有货物了");
+			Toast.makeText(getActivity(), "输入的venderNumber查不到对应的售货机",Toast.LENGTH_SHORT).show();
+		}else if(result.get(0).get("Result_Source_time").toString().contains("none_temperature_process")){
+			System.out.println("没有查到该货物的温度与过程信息");
+			Toast.makeText(getActivity(), "没有查到该货物的温度与过程信息",Toast.LENGTH_SHORT).show();
+		}else{
+			Intent intent = new Intent(getActivity(),SourceChartActivity.class);
+			intent.putExtra("SourceTempData", (Serializable)list);
+			startActivity(intent);
+		}
+    	
+    }
+    
+    
+    /*
+     * 函数抽出
+     * map_data.size() == 0
+     * 含义：一进入函数，首先获得所有自动售货机的编号
+     * 
+     */
+    @SuppressWarnings("unchecked")
+	private void getAllVenderID(final String url,Map<String,String> map_data){
+    	new AsyncTask<Map<String,String>, Void, String []>() {
+            @Override
+			protected void onPostExecute(String[] result) {
+				// TODO Auto-generated method stub
+				super.onPostExecute(result);
+				//Log.i("result",result.toString());
+				if(result==null){
+					Toast.makeText(getActivity(), "没有获得任何数据",Toast.LENGTH_SHORT).show();
+				}else{
+					lists.clear();
+    				Items = values;
+    				initListView(Items);
+				}
+				
+			}
+			@Override
+			protected String[] doInBackground(Map<String, String>... arg0) {
+                String value = "null";
+                HttpPost post = new HttpPost(url);
+                System.out.println("进入溯源模块发送Http请求:"+System.currentTimeMillis());
+                try {
+					HttpResponse respone = httpClient.execute(post);
+					int state = respone.getStatusLine().getStatusCode()/100;
+					System.out.println("响应状态码:"+respone.getStatusLine().getStatusCode());
+					
+					if(state == 1){
+						System.out.println("临时响应");
+					}else if(state == 2){
+						value = EntityUtils.toString(respone.getEntity());
+						Log.i("value", value);
+						System.out.println("进入查询模块收到正确的Http:"+System.currentTimeMillis());
+						try {
+							JSONObject objectStr = new JSONObject(value.toString());
+							JSONArray arrayJson = objectStr .getJSONArray("venderNumbers");
+						    values = new String [arrayJson.length()];
+							for(int i=0;i<arrayJson.length();i++) {  
+				                 values[i] = (String) arrayJson.get(i);
+				                 System.out.println(arrayJson.get(i).toString());
+						    } 
+							
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}else if(state == 3){
+						System.out.println("重定向");
+					}else if(state == 4){
+						System.out.println("请求错误");
+					}else if(state == 5){
+						System.out.println("服务器错误");
+					}
+					
+				}  catch (Exception e) {
+					System.out.println("IOException");
+					String exception = tool.ExceptionCode(e);
+					System.out.println(exception);
+					e.printStackTrace();
+					Message msg = handler.obtainMessage();
+					msg.obj = exception;
+					handler.sendMessage(msg);					
+				}
+				return values;
+			}
+		}.execute(map_data);
+    	
+    }
+    
 
+    /*
+     * 
+     */
 	
 }

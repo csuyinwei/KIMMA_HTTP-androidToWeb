@@ -149,6 +149,7 @@ public class WorkActivity extends FragmentActivity {
 								}
 								i++;
 								
+								
 			        		}
 				     } 
 				}.start();
@@ -201,6 +202,7 @@ public class WorkActivity extends FragmentActivity {
 	            // 利用handler延迟发送更改状态信息
 	            mHandler.sendEmptyMessageDelayed(0, 2000);
 	        } else {
+	        	if(bluetoothTool.bluetoothGatt == null) return;
 	        	close();
 	            finish();
 	            System.exit(0);
@@ -321,9 +323,11 @@ public class WorkActivity extends FragmentActivity {
 			@Override
 			public void onReceive(Context arg0, Intent arg1) {
 	          //通知UI界面接收完成
+				
 				Log.i("历史数据已接受", "");
 				isRead = false;
 				byte[] msg = arg1.getByteArrayExtra("BluetoothData_all");
+				System.out.println("接受数据结束的时间:"+System.currentTimeMillis());
 				System.out.println("广播接收到的历史数据长度 ：" + msg.length);
 				String[] dataStr = tool.HaxToString(msg,msg.length);
 				list = tool.DealData(dataStr);

@@ -16,6 +16,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import com.example.kimma_test_ui_hs.R;
 import com.example.kimma_test_ui_hs.WorkActivity;
+import com.example.tools.HttpTool;
 import com.example.tools.Tools;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -173,22 +174,13 @@ public class StorehouseFragment extends Fragment{
 			@Override
 			protected String doInBackground(Map<String,String>... arg0) {
                 String value = "null";
-                HttpPost post = new HttpPost(url);
-              //解决中文乱码问题
-                post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                HttpPost post = null;
                 try {
-					List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>(); 
-					int size = arg0[0].size();
-					System.out.println("size:"+size);
-					int i = 0;
-					while(i<size){
-						list.add(new BasicNameValuePair(arg0[0].keySet().toArray()[i].toString(), arg0[0].get(arg0[0].keySet().toArray()[i].toString())));
-						System.out.println("Key:"+arg0[0].keySet().toArray()[i].toString()+" "+"value:"+arg0[0].get(arg0[0].keySet().toArray()[i].toString()));
-						i++;
-					}		
-					HttpEntity entity = new UrlEncodedFormEntity(list,HTTP.UTF_8);
-					post.setEntity(entity);
-				} catch (UnsupportedEncodingException e1) {}
+					post = HttpTool.SengRequest(url, arg0);
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
                 try {
 					HttpResponse respone = httpClient.execute(post);
 					int state = respone.getStatusLine().getStatusCode()/100;
@@ -197,7 +189,8 @@ public class StorehouseFragment extends Fragment{
 						System.out.println("临时响应");
 					}else if(state == 2){
 						value = EntityUtils.toString(respone.getEntity());
-						System.out.println("value:"+value);
+//						System.out.println("value:"+value);
+						System.out.println("仓储模块接收到正确的HTTP请求:"+ System.currentTimeMillis());
 					}else if(state == 3){
 						System.out.println("重定向");
 					}else if(state == 4){

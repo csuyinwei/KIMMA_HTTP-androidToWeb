@@ -2,24 +2,16 @@ package com.example.fragment;
 
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import com.example.kimma_test_ui_hs.LoginActivity;
 import com.example.kimma_test_ui_hs.MainActivity;
 import com.example.kimma_test_ui_hs.R;
+import com.example.tools.HttpTool;
 import com.example.tools.Tools;
 import com.special.ResideMenu.ResideMenu;
 import android.annotation.SuppressLint;
@@ -145,22 +137,14 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
 			protected String doInBackground(Map<String, String>... arg0) {
                 String value = "null";
 //                Boolean Result_Login = false;//调试用
-                HttpPost post = new HttpPost(url);
-                //解决中文乱码问题
-                post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                
+                HttpPost post = null;
                 try {
-					List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>(); 
-					int size = arg0[0].size();
-					System.out.println("size:"+size);
-					int i = 0;
-					while(i<size){
-						list.add(new BasicNameValuePair(arg0[0].keySet().toArray()[i].toString(), arg0[0].get(arg0[0].keySet().toArray()[i].toString())));
-						System.out.println("Key:"+arg0[0].keySet().toArray()[i].toString()+" "+"value:"+arg0[0].get(arg0[0].keySet().toArray()[i].toString()));
-						i++;
-					}
-					HttpEntity entity = new UrlEncodedFormEntity(list,HTTP.UTF_8);
-					post.setEntity(entity);
-				} catch (UnsupportedEncodingException e1) {}
+					post = HttpTool.SengRequest(url, arg0);
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
                 try {
 					HttpResponse respone = httpClient.execute(post);
 					int state = respone.getStatusLine().getStatusCode()/100;
@@ -169,6 +153,7 @@ public class HomeFragment<OnArticleSelectedListener_HomeFregment> extends Fragme
 						System.out.println("临时响应");
 					}else if(state == 2){
 						value = EntityUtils.toString(respone.getEntity());
+						System.out.println("登录模块HTTP收到正确响应响应:"+System.currentTimeMillis());
 						/**
 						 * 模拟调试专用
 						 */
